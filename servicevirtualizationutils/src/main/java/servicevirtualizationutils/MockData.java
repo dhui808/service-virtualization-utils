@@ -59,7 +59,7 @@ public class MockData {
 		//user does not select flow/scenario
 		if (null == flow) {
 			jsonOrXmlFile = findMatchingFile(defaultMappingMap, pathInfo);
-			responseFile = mockDataHome + "/" + mockServerName + "/" + jsonOrXmlFile;
+			responseFile = getServerServiceVirtualizationDataPath() + "/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
 			logger.debug("responseFile:" + responseFile + " exists? " + fileExists);
 			
@@ -68,19 +68,19 @@ public class MockData {
 		
 		//user does select flow/scenario
 		jsonOrXmlFile =  findMatchingFile(jsonMappingMap.get(flow), pathInfo);
-		responseFile = mockDataHome + "/" + mockServerName + "/" + flow + "/" + scenario + "/" + jsonOrXmlFile;
+		responseFile = getServerServiceVirtualizationDataPath() + "/" + flow + "/" + scenario + "/" + jsonOrXmlFile;
 		fileExists = new File(responseFile).isFile();
 		
 		if (!fileExists) {
 			//try find response file from the default scenario of this flow
-			responseFile = mockDataHome + "/" + mockServerName + "/" + flow + "/default/" + jsonOrXmlFile;
+			responseFile = getServerServiceVirtualizationDataPath() + "/" + flow + "/default/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
 		}
 		
 		if (!fileExists) {
 			//try find response file from the default scenario
 			jsonOrXmlFile = findMatchingFile(defaultMappingMap, pathInfo);
-			responseFile = mockDataHome + "/" + mockServerName + "/" + jsonOrXmlFile;
+			responseFile = getServerServiceVirtualizationDataPath() + "/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
 		}
 
@@ -116,7 +116,7 @@ public class MockData {
 	private void loadAllMappingFiles() {
 		
 		//entry-mapping.json
-		File entryMappingFile = new File(mockDataHome + "/" + mockServerName + "/entry-mapping.json");
+		File entryMappingFile = new File(getServerServiceVirtualizationDataPath() + "/entry-mapping.json");
 		
 		ObjectMapper objectMapper = 
 				new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).configure(JsonParser.Feature.ALLOW_COMMENTS, true);
@@ -131,6 +131,7 @@ public class MockData {
 		}
 		
 		entryPageUrl = entryMapping.getEntryPageUrl();
+		logger.debug("entryPageUrl=" + entryPageUrl);
 		mappingFileFolders = entryMapping.getFlowNames();
 		
 		for (String folderPath : mappingFileFolders) {
@@ -166,7 +167,7 @@ public class MockData {
 	private void loadAlternateResponseFiles() {
 		//alternateResponseFiles.json contains the array of the request pathInfo. Their corresponding response files have a second version,
 		//to be served alternately.
-		File mappingFile = new File(mockDataHome + "/" + mockServerName + "/alternateResponseFiles.json");
+		File mappingFile = new File(getServerServiceVirtualizationDataPath() + "/alternateResponseFiles.json");
 		
 		ObjectMapper objectMapper = 
 				new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).configure(JsonParser.Feature.ALLOW_COMMENTS, true);
@@ -191,7 +192,7 @@ public class MockData {
 		
 		//mapping file is always foldername-mapping.json
 		String foldername = folderPath.substring(folderPath.lastIndexOf("/") + 1);
-		File mappingFile = new File(mockDataHome + "/" + mockServerName + "/" + folderPath + "/" + foldername + "-mapping.json");
+		File mappingFile = new File(getServerServiceVirtualizationDataPath() + "/" + folderPath + "/" + foldername + "-mapping.json");
 		Long timestamp = mappingFileTimestampMap.get(folderPath);
 		long lastModified = mappingFile.lastModified();
 		
@@ -207,7 +208,7 @@ public class MockData {
 	
 	public Map<String, List<String>> loadFlowScenarios() {
 		
-		File mappingFile = new File(mockDataHome + "/" + mockServerName + "/flow-scenarios.json");
+		File mappingFile = new File(getServerServiceVirtualizationDataPath() + "/flow-scenarios.json");
 		
 		ObjectMapper objectMapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 				.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
@@ -228,6 +229,10 @@ public class MockData {
 		return entryPageUrl;
 	}
 	
+	private String getServerServiceVirtualizationDataPath() {
+		return mockDataHome + "/" + mockServerName;
+	}
+	
 	private void printJsonMappingMap() {
 		
 		logger.debug("jsonMappingMap:" + jsonMappingMap);
@@ -238,7 +243,6 @@ public class MockData {
 			logger.debug("jsonMappingMap:");
 			logger.debug(indented);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
