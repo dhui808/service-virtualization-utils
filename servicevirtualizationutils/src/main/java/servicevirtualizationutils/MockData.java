@@ -42,8 +42,6 @@ public class MockData {
 		mockData.generateDefaultMapping();
 		mockData.loadAlternateResponseFiles();
 		
-		logger.debug("call printJsonMappingMap");
-		
 		mockData.printJsonMappingMap();
 		
 		return mockData;
@@ -237,10 +235,16 @@ public class MockData {
 		
 		logger.debug("jsonMappingMap:" + jsonMappingMap);
 		
+		printJsonMappingFile(jsonMappingMap);
+	}
+	
+	private void printJsonMappingFile(Object file) {
+
 		ObjectMapper mapper = new ObjectMapper();
+		
 		try {
-			String indented = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMappingMap);
-			logger.debug("jsonMappingMap:");
+			String indented = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(file);
+			
 			logger.debug(indented);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
