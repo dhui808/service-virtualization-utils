@@ -50,6 +50,7 @@ public class MockData {
 	public String findFilePath(String pathInfo, String flow, String scenario) {
 	
 		logger.debug("pathInfo:" + pathInfo + " flow:" + flow + " scenario:" + scenario);
+		
 		String jsonOrXmlFile;
 		String responseFile;
 		boolean fileExists;
@@ -59,6 +60,7 @@ public class MockData {
 			jsonOrXmlFile = findMatchingFile(defaultMappingMap, pathInfo);
 			responseFile = getServerServiceVirtualizationDataPath() + "/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
+			
 			logger.debug("responseFile:" + responseFile + " exists? " + fileExists);
 			
 			return responseFile;
@@ -73,6 +75,7 @@ public class MockData {
 			//try find response file from the default scenario of this flow
 			responseFile = getServerServiceVirtualizationDataPath() + "/" + flow + "/default/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
+			logger.debug("2. responseFile:" + responseFile + " exists? " + fileExists);
 		}
 		
 		if (!fileExists) {
@@ -80,9 +83,10 @@ public class MockData {
 			jsonOrXmlFile = findMatchingFile(defaultMappingMap, pathInfo);
 			responseFile = getServerServiceVirtualizationDataPath() + "/" + jsonOrXmlFile;
 			fileExists = new File(responseFile).isFile();
+			logger.debug("3. responseFile:" + responseFile + " exists? " + fileExists);
 		}
 
-		logger.debug("responseFile:" + responseFile + " exists? " + fileExists);
+		logger.debug("4. responseFile:" + responseFile + " exists? " + fileExists);
 		
 		return responseFile;
 	}
@@ -121,6 +125,8 @@ public class MockData {
 		List<String> mappingFileFolders;
 		EntryMapping entryMapping = null;
 		
+		logger.debug("entryMappingFile=" + entryMappingFile);
+		
 		try {
 			entryMapping = objectMapper.readValue(entryMappingFile, EntryMapping.class);
 		} catch (IOException e1) {
@@ -129,7 +135,6 @@ public class MockData {
 		}
 		
 		entryPageUrl = entryMapping.getEntryPageUrl();
-		logger.debug("entryPageUrl=" + entryPageUrl);
 		mappingFileFolders = entryMapping.getFlowNames();
 		
 		for (String folderPath : mappingFileFolders) {
@@ -147,8 +152,11 @@ public class MockData {
 		//"default" folder in each flow contains all response files of happy scenario.
 		//response files in a specific scenario folder only overrides some of those from the "default" folder
 		
+		System.out.println("generateDefaultMapping> ");
 		String path;
 		Map<String, String> map;
+		
+		System.out.println("jsonMappingMap.size " + jsonMappingMap.size());
 		
 		for (String folderPath : jsonMappingMap.keySet()) {
 			map =  jsonMappingMap.get(folderPath);
